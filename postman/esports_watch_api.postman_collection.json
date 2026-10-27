@@ -1,0 +1,1266 @@
+{
+  "info": {
+    "name": "Esports Watch API",
+    "description": "Postman Collection v2.1 for the Esports Watch Django REST API. Set base_url to the backend URL (default http://127.0.0.1:8000). Requests include successful CRUD examples and expected error cases. Run requests in a sensible order; create requests can be used to obtain IDs for detail/update/delete requests.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:8000",
+      "type": "string"
+    },
+    {
+      "key": "game_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "team_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "team2_id",
+      "value": "2",
+      "type": "string"
+    },
+    {
+      "key": "tournament_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "match_id",
+      "value": "1",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Games",
+      "item": [
+        {
+          "name": "List games — success",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{base_url}}/games/",
+            "description": "Expected: 200 OK",
+            "body": {
+              "mode": "raw",
+              "raw": "\"\"",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create game — success",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{base_url}}/games/",
+            "description": "Expected: 201 Created; use a unique name.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Example Game\",\n  \"description\": \"Created from Postman\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Search games",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{base_url}}/games/?search=Counter-Strike",
+            "description": "Expected: 200 OK",
+            "body": {
+              "mode": "raw",
+              "raw": "\"\"",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get game by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{base_url}}/games/{{game_id}}/",
+            "description": "Expected: 200 OK if game_id exists",
+            "body": {
+              "mode": "raw",
+              "raw": "\"\"",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update game — PUT",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{base_url}}/games/{{game_id}}/",
+            "description": "Expected: 200 OK; all required serializer fields included.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Example Game\",\n  \"description\": \"Updated from Postman\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get missing game — error 404",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{base_url}}/games/999999/",
+            "description": "Expected: 404 Not Found with JSON error message",
+            "body": {
+              "mode": "raw",
+              "raw": "\"\"",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete game linked to tournament — error 409",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{base_url}}/games/{{game_id}}/",
+            "description": "Expected: 409 Conflict if this game has tournaments; otherwise 204 No Content",
+            "body": {
+              "mode": "raw",
+              "raw": "\"\"",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete game — success",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{base_url}}/games/{{game_id}}/",
+            "description": "Expected: 204 No Content only when game has no tournaments",
+            "body": {
+              "mode": "raw",
+              "raw": "\"\"",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Teams",
+      "item": [
+        {
+          "name": "List teams — success",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{base_url}}/teams/",
+            "description": "Expected: 200 OK",
+            "body": {
+              "mode": "raw",
+              "raw": "\"\"",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create team — success",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{base_url}}/teams/",
+            "description": "Expected: 201 Created; use a unique name.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Example Team\",\n  \"country\": \"UA\",\n  \"description\": \"Created from Postman\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Search teams",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{base_url}}/teams/?search=Alpha",
+            "description": "Expected: 200 OK",
+            "body": {
+              "mode": "raw",
+              "raw": "\"\"",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Filter teams by country",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{base_url}}/teams/?country=UA",
+            "description": "Expected: 200 OK",
+            "body": {
+              "mode": "raw",
+              "raw": "\"\"",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get team by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{base_url}}/teams/{{team_id}}/",
+            "description": "Expected: 200 OK if team_id exists",
+            "body": {
+              "mode": "raw",
+              "raw": "\"\"",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update team — PUT",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{base_url}}/teams/{{team_id}}/",
+            "description": "Expected: 200 OK",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Example Team\",\n  \"country\": \"UA\",\n  \"description\": \"Updated from Postman\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get missing team — error 404",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{base_url}}/teams/999999/",
+            "description": "Expected: 404 Not Found",
+            "body": {
+              "mode": "raw",
+              "raw": "\"\"",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete team participating in matches — error 409",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{base_url}}/teams/{{team_id}}/",
+            "description": "Expected: 409 Conflict if the team participates in matches",
+            "body": {
+              "mode": "raw",
+              "raw": "\"\"",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete team — success",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{base_url}}/teams/{{team_id}}/",
+            "description": "Expected: 204 No Content only when team has no matches",
+            "body": {
+              "mode": "raw",
+              "raw": "\"\"",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Tournaments",
+      "item": [
+        {
+          "name": "List tournaments — success",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{base_url}}/tournaments/",
+            "description": "Expected: 200 OK",
+            "body": {
+              "mode": "raw",
+              "raw": "\"\"",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create tournament — success",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{base_url}}/tournaments/",
+            "description": "Expected: 201 Created; game_id must reference an existing game.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Example Tournament\",\n  \"game_id\": 1,\n  \"start_date\": \"2026-11-01\",\n  \"end_date\": \"2026-11-10\",\n  \"prize_pool\": 10000,\n  \"status\": \"upcoming\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Search tournaments",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{base_url}}/tournaments/?search=Example",
+            "description": "Expected: 200 OK",
+            "body": {
+              "mode": "raw",
+              "raw": "\"\"",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Filter tournaments by game",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{base_url}}/tournaments/?game={{game_id}}",
+            "description": "Expected: 200 OK",
+            "body": {
+              "mode": "raw",
+              "raw": "\"\"",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Filter tournaments by status",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{base_url}}/tournaments/?status=upcoming",
+            "description": "Expected: 200 OK",
+            "body": {
+              "mode": "raw",
+              "raw": "\"\"",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Sort tournaments by start date",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{base_url}}/tournaments/?sort=start_date_asc",
+            "description": "Expected: 200 OK",
+            "body": {
+              "mode": "raw",
+              "raw": "\"\"",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get tournament by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{base_url}}/tournaments/{{tournament_id}}/",
+            "description": "Expected: 200 OK if tournament_id exists",
+            "body": {
+              "mode": "raw",
+              "raw": "\"\"",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update tournament — PUT",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{base_url}}/tournaments/{{tournament_id}}/",
+            "description": "Expected: 200 OK",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Example Tournament\",\n  \"game_id\": 1,\n  \"start_date\": \"2026-11-01\",\n  \"end_date\": \"2026-11-12\",\n  \"prize_pool\": 15000,\n  \"status\": \"upcoming\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Invalid tournament dates — error 400",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{base_url}}/tournaments/",
+            "description": "Expected: 400 Bad Request because end_date is earlier than start_date",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Invalid Dates Tournament\",\n  \"game_id\": 1,\n  \"start_date\": \"2026-11-10\",\n  \"end_date\": \"2026-11-01\",\n  \"prize_pool\": 0,\n  \"status\": \"upcoming\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get missing tournament — error 404",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{base_url}}/tournaments/999999/",
+            "description": "Expected: 404 Not Found",
+            "body": {
+              "mode": "raw",
+              "raw": "\"\"",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete tournament with matches — error 409",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{base_url}}/tournaments/{{tournament_id}}/",
+            "description": "Expected: 409 Conflict if tournament has matches",
+            "body": {
+              "mode": "raw",
+              "raw": "\"\"",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete tournament — success",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{base_url}}/tournaments/{{tournament_id}}/",
+            "description": "Expected: 204 No Content only when tournament has no matches",
+            "body": {
+              "mode": "raw",
+              "raw": "\"\"",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Matches",
+      "item": [
+        {
+          "name": "List matches — success",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{base_url}}/matches/",
+            "description": "Expected: 200 OK",
+            "body": {
+              "mode": "raw",
+              "raw": "\"\"",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create match — success",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{base_url}}/matches/",
+            "description": "Expected: 201 Created; all IDs must exist and team IDs must differ.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tournament_id\": 1,\n  \"team1_id\": 1,\n  \"team2_id\": 2,\n  \"start_time\": \"2026-11-06T15:00:00Z\",\n  \"format\": \"bo3\",\n  \"score\": null,\n  \"status\": \"upcoming\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Filter matches by date",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{base_url}}/matches/?date=2026-11-06",
+            "description": "Expected: 200 OK",
+            "body": {
+              "mode": "raw",
+              "raw": "\"\"",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Filter matches by date range",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{base_url}}/matches/?from=2026-11-01&to=2026-11-30",
+            "description": "Expected: 200 OK",
+            "body": {
+              "mode": "raw",
+              "raw": "\"\"",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Filter matches by tournament",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{base_url}}/matches/?tournament={{tournament_id}}",
+            "description": "Expected: 200 OK",
+            "body": {
+              "mode": "raw",
+              "raw": "\"\"",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Filter matches by team",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{base_url}}/matches/?team={{team_id}}",
+            "description": "Expected: 200 OK",
+            "body": {
+              "mode": "raw",
+              "raw": "\"\"",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Filter matches by game",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{base_url}}/matches/?game={{game_id}}",
+            "description": "Expected: 200 OK",
+            "body": {
+              "mode": "raw",
+              "raw": "\"\"",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Filter matches by status and sort",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{base_url}}/matches/?status=upcoming&sort=date_asc",
+            "description": "Expected: 200 OK",
+            "body": {
+              "mode": "raw",
+              "raw": "\"\"",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get match by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{base_url}}/matches/{{match_id}}/",
+            "description": "Expected: 200 OK if match_id exists",
+            "body": {
+              "mode": "raw",
+              "raw": "\"\"",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update match — PUT",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{base_url}}/matches/{{match_id}}/",
+            "description": "Expected: 200 OK",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tournament_id\": 1,\n  \"team1_id\": 1,\n  \"team2_id\": 2,\n  \"start_time\": \"2026-11-07T15:00:00Z\",\n  \"format\": \"bo3\",\n  \"score\": null,\n  \"status\": \"upcoming\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create match with same team — error 400",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{base_url}}/matches/",
+            "description": "Expected: 400 Bad Request because a team cannot play against itself",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tournament_id\": 1,\n  \"team1_id\": 1,\n  \"team2_id\": 1,\n  \"start_time\": \"2026-11-06T15:00:00Z\",\n  \"format\": \"bo3\",\n  \"score\": null,\n  \"status\": \"upcoming\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get missing match — error 404",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{base_url}}/matches/999999/",
+            "description": "Expected: 404 Not Found",
+            "body": {
+              "mode": "raw",
+              "raw": "\"\"",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete match — success",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{base_url}}/matches/{{match_id}}/",
+            "description": "Expected: 204 No Content",
+            "body": {
+              "mode": "raw",
+              "raw": "\"\"",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Nested endpoints",
+      "item": [
+        {
+          "name": "List tournaments for a game",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{base_url}}/games/{{game_id}}/tournaments/",
+            "description": "Expected: 200 OK",
+            "body": {
+              "mode": "raw",
+              "raw": "\"\"",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List matches for a team",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{base_url}}/teams/{{team_id}}/matches/",
+            "description": "Expected: 200 OK",
+            "body": {
+              "mode": "raw",
+              "raw": "\"\"",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List matches for a tournament",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{base_url}}/tournaments/{{tournament_id}}/matches/",
+            "description": "Expected: 200 OK",
+            "body": {
+              "mode": "raw",
+              "raw": "\"\"",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Missing game nested endpoint — error 404",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{base_url}}/games/999999/tournaments/",
+            "description": "Expected: 404 Not Found",
+            "body": {
+              "mode": "raw",
+              "raw": "\"\"",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Missing team nested endpoint — error 404",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{base_url}}/teams/999999/matches/",
+            "description": "Expected: 404 Not Found",
+            "body": {
+              "mode": "raw",
+              "raw": "\"\"",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Missing tournament nested endpoint — error 404",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": "{{base_url}}/tournaments/999999/matches/",
+            "description": "Expected: 404 Not Found",
+            "body": {
+              "mode": "raw",
+              "raw": "\"\"",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
