@@ -1,6 +1,7 @@
 
 from datetime import date, datetime, timezone
 
+from django.contrib.auth.models import User
 from rest_framework import status
 from rest_framework.test import APITestCase
 
@@ -38,6 +39,11 @@ class EsportsAPITests(APITestCase):
             status='upcoming',
         )
 
+        self.user = User.objects.create_user(
+            username='testuser',
+            password='StrongPass123!',
+        )
+
     def test_get_games(self):
         response = self.client.get('/games/')
 
@@ -46,6 +52,8 @@ class EsportsAPITests(APITestCase):
         self.assertEqual(response.data[0]['name'], 'Counter-Strike 2')
 
     def test_create_game(self):
+        self.client.force_authenticate(user=self.user)
+
         response = self.client.post(
             '/games/',
             {'name': 'Dota 2', 'description': 'MOBA game'},
@@ -98,6 +106,8 @@ class EsportsAPITests(APITestCase):
         self.assertEqual(len(response.data), 1)
 
     def test_cannot_create_match_with_same_team(self):
+        self.client.force_authenticate(user=self.user)
+
         response = self.client.post(
             '/matches/',
             {
@@ -114,7 +124,51 @@ class EsportsAPITests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_cannot_delete_game_with_tournament(self):
+        self.client.force_authenticate(user=self.user)
+
         response = self.client.delete(f'/games/{self.game.id}/')
 
         self.assertEqual(response.status_code, status.HTTP_409_CONFLICT)
         self.assertTrue(Game.objects.filter(id=self.game.id).exists())
+
+    def test_cannot_create_game_without_authentication(self):
+        response = self.client.post(
+            '/games/',
+            {'name': 'Unauthorized Game'},
+            format='json',
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_401_UNAUTHORIZED,
+        )
+
+    def test_patch_game_with_authentication(self):
+        self.client.force_authenticate(user=self.user)
+
+        response = self.client.patch(
+            f'/games/{self.game.id}/',
+            {'description': 'Updated description'},
+            format='json',
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        self.game.refresh_from_db()
+        self.assertEqual(self.game.description, 'Updated description')
+        self.assertEqual(self.game.name, 'Counter-Strike 2')
+
+    def test_patch_game_without_authentication(self):
+        response = self.client.patch(
+            f'/games/{self.game.id}/',
+            {'description': 'Unauthorized change'},
+            format='json',
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_401_UNAUTHORIZED,
+        )
+
+        self.game.refresh_from_db()
+        self.assertEqual(self.game.description, 'Tactical shooter')

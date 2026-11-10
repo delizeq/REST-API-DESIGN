@@ -136,3 +136,86 @@ Frontend запускається на порту `5500`, а Django API — на
 ## Ліцензія
 
 Навчальний проєкт.
+
+## Реєстрація та авторизація (JWT)
+
+Для авторизації використовується djangorestframework-simplejwt.
+
+### Реєстрація
+
+POST /auth/register/
+
+Приклад JSON:
+
+```json
+{
+  "username": "exampleuser",
+  "email": "example@example.com",
+  "password": "StrongPass123!",
+  "password_confirmation": "StrongPass123!"
+}
+```
+
+201 Created — користувача створено.
+400 Bad Request — помилка валідації.
+
+Паролі зберігаються у вигляді хешу.
+
+### Вхід
+
+POST /auth/login/
+
+```json
+{
+  "username": "exampleuser",
+  "password": "StrongPass123!"
+}
+```
+
+200 OK — повертає access і refresh токени.
+401 Unauthorized — неправильні дані входу.
+
+### Оновлення токена
+
+POST /auth/token/refresh/
+
+```json
+{
+  "refresh": "YOUR_REFRESH_TOKEN"
+}
+```
+
+200 OK — повертає новий access токен.
+401 Unauthorized — недійсний refresh токен.
+
+### Профіль користувача
+
+GET /auth/me/
+
+Заголовок:
+
+```text
+Authorization: Bearer YOUR_ACCESS_TOKEN
+```
+
+200 OK — інформація про користувача.
+401 Unauthorized — немає авторизації.
+
+### Права доступу
+
+GET-запити доступні всім.
+
+POST, PUT і DELETE для ігор, команд, турнірів та матчів
+доступні тільки авторизованим користувачам.
+
+Для захищених запитів використовується заголовок:
+
+```text
+Authorization: Bearer YOUR_ACCESS_TOKEN
+```
+
+### Вихід із системи
+
+Вихід реалізовано на frontend шляхом видалення
+збережених access і refresh токенів.
+Окремого backend endpoint для виходу немає.

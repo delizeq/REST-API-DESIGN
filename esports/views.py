@@ -1,16 +1,23 @@
+
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db.models import Q
 from rest_framework import status
 from rest_framework.exceptions import NotFound, ValidationError
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import Game, Team, Tournament, Match
-from .serializers import (GameSerializer, TeamSerializer,
-                          TournamentSerializer, MatchSerializer)
+from .serializers import (
+    GameSerializer,
+    TeamSerializer,
+    TournamentSerializer,
+    MatchSerializer,
+)
 
 
 class BaseListView(APIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
     model = None
     serializer_class = None
 
@@ -33,6 +40,7 @@ class BaseListView(APIView):
 
 
 class BaseDetailView(APIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
     model = None
     serializer_class = None
     name = 'Об\'єкт'
@@ -58,11 +66,23 @@ class BaseDetailView(APIView):
         serializer.save()
         return Response(serializer.data)
 
+    def patch(self, request, pk):
+        obj = self.get_object(pk)
+        serializer = self.serializer_class(
+            obj, data=request.data, partial=True
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+
     def delete(self, request, pk):
         obj = self.get_object(pk)
         message = self.blocking_message(obj)
         if message:
-            return Response({'error': message}, status=status.HTTP_409_CONFLICT)
+            return Response(
+                {'error': message},
+                status=status.HTTP_409_CONFLICT
+            )
         obj.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -86,7 +106,10 @@ class GameDetailView(BaseDetailView):
     def blocking_message(self, obj):
         count = obj.tournaments.count()
         if count:
-            return f'Неможливо видалити гру, оскільки за нею закріплено турнірів: {count}.'
+            return (
+                f'Неможливо видалити гру, оскільки за нею '
+                f'закріплено турнірів: {count}.'
+            )
 
 
 # ---------- Команди ----------
@@ -108,9 +131,14 @@ class TeamDetailView(BaseDetailView):
     name = 'Команду'
 
     def blocking_message(self, obj):
-        count = Match.objects.filter(Q(team1=obj) | Q(team2=obj)).count()
+        count = Match.objects.filter(
+            Q(team1=obj) | Q(team2=obj)
+        ).count()
         if count:
-            return f'Неможливо видалити команду, оскільки вона бере участь у матчах: {count}.'
+            return (
+                f'Неможливо видалити команду, оскільки '
+                f'вона бере участь у матчах: {count}.'
+            )
 
 
 # ---------- Турніри ----------
@@ -125,13 +153,16 @@ class TournamentListView(BaseListView):
             qs = qs.filter(game_id=int(p['game']))
         if p.get('status'):
             qs = qs.filter(status=p['status'])
+
         sorting = {
             'start_date_asc': 'start_date',
             'start_date_desc': '-start_date',
             'prize_desc': '-prize_pool',
         }
+
         if p.get('sort') in sorting:
             qs = qs.order_by(sorting[p['sort']])
+
         return qs
 
 
@@ -143,7 +174,10 @@ class TournamentDetailView(BaseDetailView):
     def blocking_message(self, obj):
         count = obj.matches.count()
         if count:
-            return f'Неможливо видалити турнір, оскільки в ньому є матчі: {count}.'
+            return (
+                f'Неможливо видалити турнір, оскільки '
+                f'в ньому є матчі: {count}.'
+            )
 
 
 # ---------- Матчі ----------
@@ -162,7 +196,9 @@ class MatchListView(BaseListView):
             qs = qs.filter(tournament_id=int(p['tournament']))
         if p.get('team'):
             team_id = int(p['team'])
-            qs = qs.filter(Q(team1_id=team_id) | Q(team2_id=team_id))
+            qs = qs.filter(
+                Q(team1_id=team_id) | Q(team2_id=team_id)
+            )
         if p.get('game'):
             qs = qs.filter(tournament__game_id=int(p['game']))
         if p.get('status'):
@@ -171,6 +207,7 @@ class MatchListView(BaseListView):
             qs = qs.order_by('start_time')
         elif p.get('sort') == 'date_desc':
             qs = qs.order_by('-start_time')
+
         return qs
 
 
@@ -185,21 +222,39 @@ class GameTournamentsView(APIView):
     def get(self, request, pk):
         if not Game.objects.filter(pk=pk).exists():
             raise NotFound(f'Гру з id={pk} не знайдено.')
-        qs = Tournament.objects.filter(game_id=pk).order_by('id')
-        return Response(TournamentSerializer(qs, many=True).data)
+
+        qs = Tournament.objects.filter(
+            game_id=pk
+        ).order_by('id')
+
+        return Response(
+            TournamentSerializer(qs, many=True).data
+        )
 
 
 class TournamentMatchesView(APIView):
     def get(self, request, pk):
         if not Tournament.objects.filter(pk=pk).exists():
             raise NotFound(f'Турнір з id={pk} не знайдено.')
-        qs = Match.objects.filter(tournament_id=pk).order_by('start_time')
-        return Response(MatchSerializer(qs, many=True).data)
+
+        qs = Match.objects.filter(
+            tournament_id=pk
+        ).order_by('start_time')
+
+        return Response(
+            MatchSerializer(qs, many=True).data
+        )
 
 
 class TeamMatchesView(APIView):
     def get(self, request, pk):
         if not Team.objects.filter(pk=pk).exists():
             raise NotFound(f'Команду з id={pk} не знайдено.')
-        qs = Match.objects.filter(Q(team1_id=pk) | Q(team2_id=pk)).order_by('start_time')
-        return Response(MatchSerializer(qs, many=True).data)
+
+        qs = Match.objects.filter(
+            Q(team1_id=pk) | Q(team2_id=pk)
+        ).order_by('start_time')
+
+        return Response(
+            MatchSerializer(qs, many=True).data
+        )
