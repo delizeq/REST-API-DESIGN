@@ -34,7 +34,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'esports', 
+    'esports',
+    'accounts',
 ]
 
 MIDDLEWARE = [
@@ -116,6 +117,9 @@ MAILERS = {
 
 REST_FRAMEWORK = {
     'EXCEPTION_HANDLER': 'esports.exceptions.custom_exception_handler',
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+    'rest_framework_simplejwt.authentication.JWTAuthentication',
+],
 }
 
 
