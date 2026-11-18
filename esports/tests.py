@@ -172,3 +172,43 @@ class EsportsAPITests(APITestCase):
 
         self.game.refresh_from_db()
         self.assertEqual(self.game.description, 'Tactical shooter')
+    def test_put_game_with_authentication(self):
+        self.client.force_authenticate(user=self.user)
+
+        response = self.client.put(
+            f'/games/{self.game.id}/',
+            {
+                'name': 'Updated CS2',
+                'description': 'Updated game description',
+            },
+            format='json',
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.game.refresh_from_db()
+        self.assertEqual(self.game.name, 'Updated CS2')
+
+    def test_delete_game_successfully(self):
+        self.client.force_authenticate(user=self.user)
+
+        game = Game.objects.create(name='Temporary Game')
+
+        response = self.client.delete(f'/games/{game.id}/')
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertFalse(Game.objects.filter(id=game.id).exists())
+
+    def test_delete_nonexistent_game(self):
+        self.client.force_authenticate(user=self.user)
+
+        response = self.client.delete('/games/99999/')
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_delete_game_without_authentication(self):
+        game = Game.objects.create(name='Protected Game')
+
+        response = self.client.delete(f'/games/{game.id}/')
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertTrue(Game.objects.filter(id=game.id).exists())
