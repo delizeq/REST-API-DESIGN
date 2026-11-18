@@ -1,9 +1,11 @@
+
+from drf_spectacular.utils import extend_schema
 from rest_framework import generics
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .serializers import RegisterSerializer
+from .serializers import RegisterSerializer, ProfileSerializer
 
 
 class RegisterView(generics.CreateAPIView):
@@ -12,8 +14,14 @@ class RegisterView(generics.CreateAPIView):
 
 
 class ProfileView(APIView):
+    serializer_class = ProfileSerializer
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(
+        operation_id='auth_profile_retrieve',
+        responses={200: ProfileSerializer},
+        description='Отримати профіль авторизованого користувача.',
+    )
     def get(self, request):
         user = request.user
 
